@@ -153,6 +153,14 @@ gboolean keypress_callback(GtkWidget *widget, GdkEventKey *event, gpointer data)
   return FALSE;
 }
 
+void slider_callback(GtkRange *range, gpointer userData) {
+  float drill_speed = gtk_range_get_value(range);
+  char command[256];
+  sprintf(command, "M3 S%f\r\n", drill_speed);
+  int r = sp_blocking_write(main_port, command, strlen(command), 1000);
+  printf("%d\n", r);
+}
+
 void button_callback(GtkButton *button, gpointer userData) {
   command *data=(command *)userData;
   printf("Hello, World! %d\n", data->movement_type);
@@ -252,6 +260,13 @@ int main(int argc, char *argv[]) {
   down_command->movement_type = DOWN;
   g_signal_connect(down_button, "clicked", G_CALLBACK(movement_callback), (gpointer) down_command);
   gtk_widget_set_name(down_button, "down_button");
+
+  // Scale
+  GtkWidget *slider = gtk_scale_new_with_range(GTK_ORIENTATION_HORIZONTAL, 0, 1000, .01);
+  g_signal_connect(slider, "value-changed", G_CALLBACK(slider_callback), NULL);
+  gtk_widget_set_name(slider, "slider");
+  printf("%f\n", gtk_range_get_value((GtkRange*)slider));
+
   // CSS
   GtkCssProvider *css = gtk_css_provider_new();
   gtk_css_provider_load_from_path(css, "style.css", NULL);
@@ -265,6 +280,7 @@ int main(int argc, char *argv[]) {
   gtk_container_add(GTK_CONTAINER(box), stop_drill_button);
   gtk_container_add(GTK_CONTAINER(box), up_button);
   gtk_container_add(GTK_CONTAINER(box), down_button);
+  gtk_container_add(GTK_CONTAINER(box), slider);
 
   // Signals
   g_signal_connect(gl_area, "realize", G_CALLBACK(realize), NULL);
