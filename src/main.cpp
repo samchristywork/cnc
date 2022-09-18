@@ -11,7 +11,9 @@ struct sp_port *main_port;
 
 enum MOVEMENT_TYPE {
   START_DRILL,
-  STOP_DRILL
+  STOP_DRILL,
+  UP,
+  DOWN
 };
 
 typedef struct command {
@@ -167,6 +169,29 @@ void button_callback(GtkButton *button, gpointer userData) {
   }
 }
 
+void movement_callback(GtkButton *button, gpointer userData) {
+  command *data=(command *)userData;
+
+  float speed=200;
+
+  if(data->movement_type == UP) {
+    char command[256] = "G91";
+    int r = sp_blocking_write(main_port, command, strlen(command), 1000);
+    printf("%d\n", r);
+    sprintf(command, "G1 F%f X0 Y0 Z%f\r\n", speed, 10.f);
+    r = sp_blocking_write(main_port, command, strlen(command), 1000);
+    printf("%d\n", r);
+  }
+  if(data->movement_type == DOWN) {
+    char command[256] = "G91";
+    int r = sp_blocking_write(main_port, command, strlen(command), 1000);
+    printf("%d\n", r);
+    sprintf(command, "G1 F%f X0 Y0 Z%f\r\n", speed, -10.f);
+    r = sp_blocking_write(main_port, command, strlen(command), 1000);
+    printf("%d\n", r);
+  }
+}
+
 int main(int argc, char *argv[]) {
 
   struct sp_port **port_list;
@@ -214,6 +239,19 @@ int main(int argc, char *argv[]) {
   g_signal_connect(stop_drill_button, "clicked", G_CALLBACK(button_callback), (gpointer) stop_drill_command);
   gtk_widget_set_name(stop_drill_button, "stop_drill_button");
 
+  // Button 3
+  GtkWidget *up_button = gtk_button_new_with_label("Up");
+  command *up_command=(command *)malloc(sizeof(command));
+  up_command->movement_type = UP;
+  g_signal_connect(up_button, "clicked", G_CALLBACK(movement_callback), (gpointer) up_command);
+  gtk_widget_set_name(up_button, "up_button");
+
+  // Button 4
+  GtkWidget *down_button = gtk_button_new_with_label("Down");
+  command *down_command=(command *)malloc(sizeof(command));
+  down_command->movement_type = DOWN;
+  g_signal_connect(down_button, "clicked", G_CALLBACK(movement_callback), (gpointer) down_command);
+  gtk_widget_set_name(down_button, "down_button");
   // CSS
   GtkCssProvider *css = gtk_css_provider_new();
   gtk_css_provider_load_from_path(css, "style.css", NULL);
@@ -225,6 +263,8 @@ int main(int argc, char *argv[]) {
   gtk_container_add(GTK_CONTAINER(window), box);
   gtk_container_add(GTK_CONTAINER(box), start_drill_button);
   gtk_container_add(GTK_CONTAINER(box), stop_drill_button);
+  gtk_container_add(GTK_CONTAINER(box), up_button);
+  gtk_container_add(GTK_CONTAINER(box), down_button);
 
   // Signals
   g_signal_connect(gl_area, "realize", G_CALLBACK(realize), NULL);
