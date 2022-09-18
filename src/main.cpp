@@ -163,10 +163,10 @@ void slider_callback(GtkRange *range, gpointer userData) {
 
 void button_callback(GtkButton *button, gpointer userData) {
   command *data=(command *)userData;
-  printf("Hello, World! %d\n", data->movement_type);
 
   if(data->movement_type == START_DRILL) {
-    const char *command = "M3 S100\r\n";
+    char command[256];
+    sprintf(command, "M3 S%f\r\n", 0.f);
     int r = sp_blocking_write(main_port, command, strlen(command), 1000);
     printf("%d\n", r);
   }
