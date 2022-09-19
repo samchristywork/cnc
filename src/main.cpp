@@ -164,15 +164,15 @@ void slider_callback(GtkRange *range, gpointer userData) {
 }
 
 void button_callback(GtkButton *button, gpointer userData) {
-  command *data=(command *)userData;
+  command *data = (command *)userData;
 
-  if(data->movement_type == START_DRILL) {
+  if (data->movement_type == START_DRILL) {
     char command[256];
     sprintf(command, "M3 S%f\r\n", 0.f);
     int r = sp_blocking_write(main_port, command, strlen(command), 1000);
     printf("%d\n", r);
   }
-  if(data->movement_type == STOP_DRILL) {
+  if (data->movement_type == STOP_DRILL) {
     const char *command = "M3 S0\r\n";
     int r = sp_blocking_write(main_port, command, strlen(command), 1000);
     printf("%d\n", r);
@@ -180,11 +180,11 @@ void button_callback(GtkButton *button, gpointer userData) {
 }
 
 void movement_callback(GtkButton *button, gpointer userData) {
-  command *data=(command *)userData;
+  command *data = (command *)userData;
 
-  float speed=200;
+  float speed = 200;
 
-  if(data->movement_type == UP) {
+  if (data->movement_type == UP) {
     char command[256] = "G91";
     int r = sp_blocking_write(main_port, command, strlen(command), 1000);
     printf("%d\n", r);
@@ -192,7 +192,7 @@ void movement_callback(GtkButton *button, gpointer userData) {
     r = sp_blocking_write(main_port, command, strlen(command), 1000);
     printf("%d\n", r);
   }
-  if(data->movement_type == DOWN) {
+  if (data->movement_type == DOWN) {
     char command[256] = "G91";
     int r = sp_blocking_write(main_port, command, strlen(command), 1000);
     printf("%d\n", r);
