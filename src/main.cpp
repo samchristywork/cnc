@@ -150,6 +150,10 @@ gboolean render(GtkGLArea *area, GdkGLContext *context) {
 gboolean keypress_callback(GtkWidget *widget, GdkEventKey *event, gpointer data) {
 
   if (event->keyval == GDK_KEY_Escape) {
+    char command[256];
+    sprintf(command, "M00\r\n");
+    sp_blocking_write(main_port, command, strlen(command), 1000);
+
     sp_free_port_list(port_list);
 
     exit(EXIT_SUCCESS);
