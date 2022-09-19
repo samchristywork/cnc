@@ -13,7 +13,9 @@ enum MOVEMENT_TYPE {
   START_DRILL,
   STOP_DRILL,
   UP,
-  DOWN
+  DOWN,
+  LEFT,
+  RIGHT
 };
 
 typedef struct command {
@@ -254,6 +256,8 @@ int main(int argc, char *argv[]) {
   add_button(box, "Down", DOWN, "down_button");
 
   // Scale
+  add_button(box, "Left", LEFT, "left_button");
+  add_button(box, "Right", RIGHT, "right_button");
   GtkWidget *slider = gtk_scale_new_with_range(GTK_ORIENTATION_HORIZONTAL, 0, 1000, .01);
   g_signal_connect(slider, "value-changed", G_CALLBACK(slider_callback), NULL);
   gtk_widget_set_name(slider, "slider");
