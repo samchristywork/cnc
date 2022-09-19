@@ -7,6 +7,7 @@
 GLuint buffer;
 GLuint program;
 glm::mat4 model = glm::mat4(1.0);
+struct sp_port **port_list;
 struct sp_port *main_port;
 
 enum MOVEMENT_TYPE {
@@ -149,6 +150,8 @@ gboolean render(GtkGLArea *area, GdkGLContext *context) {
 gboolean keypress_callback(GtkWidget *widget, GdkEventKey *event, gpointer data) {
 
   if (event->keyval == GDK_KEY_Escape) {
+    sp_free_port_list(port_list);
+
     exit(EXIT_SUCCESS);
     return TRUE;
   }
@@ -212,8 +215,6 @@ void add_button(GtkWidget *box, const char *label, int movement_type, const char
 }
 
 int main(int argc, char *argv[]) {
-
-  struct sp_port **port_list;
 
   enum sp_return result = sp_list_ports(&port_list);
   if (result != SP_OK) {
@@ -279,6 +280,4 @@ int main(int argc, char *argv[]) {
   // Main loop
   gtk_widget_show_all(GTK_WIDGET(window));
   gtk_main();
-
-  sp_free_port_list(port_list);
 }
