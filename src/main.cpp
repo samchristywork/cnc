@@ -200,6 +200,15 @@ void movement_callback(GtkButton *button, gpointer userData) {
   }
 }
 
+void add_button(GtkWidget *box, const char *label, int movement_type, const char *name) {
+  GtkWidget *button = gtk_button_new_with_label(label);
+  command *start_drill_command = (command *)malloc(sizeof(command));
+  start_drill_command->movement_type = movement_type;
+  g_signal_connect(button, "clicked", G_CALLBACK(button_callback), (gpointer)start_drill_command);
+  gtk_widget_set_name(button, name);
+  gtk_container_add(GTK_CONTAINER(box), button);
+}
+
 int main(int argc, char *argv[]) {
 
   struct sp_port **port_list;
@@ -230,57 +239,30 @@ int main(int argc, char *argv[]) {
   GtkWidget *window = gtk_window_new(GTK_WINDOW_TOPLEVEL);
   gtk_window_set_title(GTK_WINDOW(window), "CNC");
 
+  // Box
+  GtkWidget *box = gtk_box_new(GTK_ORIENTATION_VERTICAL, FALSE);
+  gtk_container_add(GTK_CONTAINER(window), box);
+
   // Drawing area
   GtkWidget *gl_area = gtk_gl_area_new();
+  gtk_box_pack_start(GTK_BOX(box), gl_area, 1, 1, 0);
 
-  // Button 1
-  GtkWidget *start_drill_button = gtk_button_new_with_label("Start Drill");
-  command *start_drill_command=(command *)malloc(sizeof(command));
-  start_drill_command->movement_type = START_DRILL;
-  g_signal_connect(start_drill_button, "clicked", G_CALLBACK(button_callback), (gpointer) start_drill_command);
-  gtk_widget_set_name(start_drill_button, "start_drill_button");
-
-  // Button 2
-  GtkWidget *stop_drill_button = gtk_button_new_with_label("Stop Drill");
-  command *stop_drill_command=(command *)malloc(sizeof(command));
-  stop_drill_command->movement_type = STOP_DRILL;
-  g_signal_connect(stop_drill_button, "clicked", G_CALLBACK(button_callback), (gpointer) stop_drill_command);
-  gtk_widget_set_name(stop_drill_button, "stop_drill_button");
-
-  // Button 3
-  GtkWidget *up_button = gtk_button_new_with_label("Up");
-  command *up_command=(command *)malloc(sizeof(command));
-  up_command->movement_type = UP;
-  g_signal_connect(up_button, "clicked", G_CALLBACK(movement_callback), (gpointer) up_command);
-  gtk_widget_set_name(up_button, "up_button");
-
-  // Button 4
-  GtkWidget *down_button = gtk_button_new_with_label("Down");
-  command *down_command=(command *)malloc(sizeof(command));
-  down_command->movement_type = DOWN;
-  g_signal_connect(down_button, "clicked", G_CALLBACK(movement_callback), (gpointer) down_command);
-  gtk_widget_set_name(down_button, "down_button");
+  // Buttons
+  add_button(box, "Start Drill", START_DRILL, "start_drill_button");
+  add_button(box, "Stop Drill", STOP_DRILL, "stop_drill_button");
+  add_button(box, "Up", UP, "up_button");
+  add_button(box, "Down", DOWN, "down_button");
 
   // Scale
   GtkWidget *slider = gtk_scale_new_with_range(GTK_ORIENTATION_HORIZONTAL, 0, 1000, .01);
   g_signal_connect(slider, "value-changed", G_CALLBACK(slider_callback), NULL);
   gtk_widget_set_name(slider, "slider");
-  printf("%f\n", gtk_range_get_value((GtkRange*)slider));
+  gtk_container_add(GTK_CONTAINER(box), slider);
 
   // CSS
   GtkCssProvider *css = gtk_css_provider_new();
   gtk_css_provider_load_from_path(css, "style.css", NULL);
   gtk_style_context_add_provider_for_screen(gdk_screen_get_default(), GTK_STYLE_PROVIDER(css), GTK_STYLE_PROVIDER_PRIORITY_USER);
-
-  // Box
-  GtkWidget *box = gtk_box_new(GTK_ORIENTATION_VERTICAL, FALSE);
-  gtk_box_pack_start(GTK_BOX(box), gl_area, 1, 1, 0);
-  gtk_container_add(GTK_CONTAINER(window), box);
-  gtk_container_add(GTK_CONTAINER(box), start_drill_button);
-  gtk_container_add(GTK_CONTAINER(box), stop_drill_button);
-  gtk_container_add(GTK_CONTAINER(box), up_button);
-  gtk_container_add(GTK_CONTAINER(box), down_button);
-  gtk_container_add(GTK_CONTAINER(box), slider);
 
   // Signals
   g_signal_connect(gl_area, "realize", G_CALLBACK(realize), NULL);
