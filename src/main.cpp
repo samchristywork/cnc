@@ -10,6 +10,8 @@ glm::mat4 model = glm::mat4(1.0);
 struct sp_port **port_list;
 struct sp_port *main_port;
 
+float dist_increment = 4;
+
 enum MOVEMENT_TYPE {
   START_DRILL,
   STOP_DRILL,
@@ -170,6 +172,10 @@ void slider_callback(GtkRange *range, gpointer userData) {
   printf("%d\n", r);
 }
 
+void movement_speed_slider_callback(GtkRange *range, gpointer userData) {
+  dist_increment = gtk_range_get_value(range);
+}
+
 void button_callback(GtkButton *button, gpointer userData) {
   command *data = (command *)userData;
 
@@ -191,21 +197,39 @@ void movement_callback(GtkButton *button, gpointer userData) {
 
   float speed = 200;
 
-  if (data->movement_type == UP) {
-    char command[256] = "G91";
-    int r = sp_blocking_write(main_port, command, strlen(command), 1000);
-    printf("%d\n", r);
-    sprintf(command, "G1 F%f X0 Y0 Z%f\r\n", speed, 10.f);
-    r = sp_blocking_write(main_port, command, strlen(command), 1000);
-    printf("%d\n", r);
-  }
-  if (data->movement_type == DOWN) {
-    char command[256] = "G91";
-    int r = sp_blocking_write(main_port, command, strlen(command), 1000);
-    printf("%d\n", r);
-    sprintf(command, "G1 F%f X0 Y0 Z%f\r\n", speed, -10.f);
-    r = sp_blocking_write(main_port, command, strlen(command), 1000);
-    printf("%d\n", r);
+  switch (data->movement_type) {
+  case ABORT:
+    sp_close(main_port);
+    sp_free_port_list(port_list);
+    ports_init();
+    break;
+  case START_DRILL:
+    sprintf(command, "M3 S%f\r\n", 100.f);
+    break;
+  case STOP_DRILL:
+    sprintf(command, "M3 S%f\r\n", 0.f);
+    break;
+  case XP:
+    sprintf(command, "G1 F%f X%f Y0 Z0\r\n", speed, dist_increment);
+    break;
+  case XM:
+    sprintf(command, "G1 F%f X%f Y0 Z0\r\n", speed, -dist_increment);
+    break;
+  case YP:
+    sprintf(command, "G1 F%f X0 Y%f Z0\r\n", speed, dist_increment);
+    break;
+  case YM:
+    sprintf(command, "G1 F%f X0 Y%f Z0\r\n", speed, -dist_increment);
+    break;
+  case ZP:
+    sprintf(command, "G1 F%f X0 Y0 Z%f\r\n", speed, dist_increment);
+    break;
+  case ZM:
+    sprintf(command, "G1 F%f X0 Y0 Z%f\r\n", speed, -dist_increment);
+    break;
+  default:
+    printf("Unrecognized movement type: %d\n", data->movement_type);
+    break;
   }
 }
 
@@ -257,16 +281,28 @@ int main(int argc, char *argv[]) {
   // Buttons
   add_button(box, "Start Drill", START_DRILL, "start_drill_button");
   add_button(box, "Stop Drill", STOP_DRILL, "stop_drill_button");
-  add_button(box, "Up", UP, "up_button");
-  add_button(box, "Down", DOWN, "down_button");
+  gtk_container_add(GTK_CONTAINER(box), hbox1);
+  add_button(hbox1, "Z- (Q)", ZM, "zm_button");
+  add_button(hbox1, "Y+ (W)", YP, "yp_button");
+  add_button(hbox1, "Z+ (E)", ZP, "zp_button");
+  gtk_container_add(GTK_CONTAINER(box), hbox2);
+  add_button(hbox2, "X- (A)", XM, "xm_button");
+  add_button(hbox2, "Y- (S)", YM, "ym_button");
+  add_button(hbox2, "X+ (D)", XP, "xp_button");
 
-  // Scale
-  add_button(box, "Left", LEFT, "left_button");
-  add_button(box, "Right", RIGHT, "right_button");
-  GtkWidget *slider = gtk_scale_new_with_range(GTK_ORIENTATION_HORIZONTAL, 0, 1000, .01);
-  g_signal_connect(slider, "value-changed", G_CALLBACK(slider_callback), NULL);
-  gtk_widget_set_name(slider, "slider");
-  gtk_container_add(GTK_CONTAINER(box), slider);
+  // Sliders
+  GtkWidget *drill_speed_slider = gtk_scale_new_with_range(GTK_ORIENTATION_HORIZONTAL, 0, 10000, .01);
+  g_signal_connect(drill_speed_slider, "value-changed", G_CALLBACK(drill_speed_slider_callback), NULL);
+  gtk_widget_set_name(drill_speed_slider, "drill_speed_slider");
+  gtk_container_add(GTK_CONTAINER(box), drill_speed_slider);
+
+  GtkWidget *movement_speed_slider = gtk_scale_new_with_range(GTK_ORIENTATION_HORIZONTAL, 0, 3, .001);
+  g_signal_connect(movement_speed_slider, "value-changed", G_CALLBACK(movement_speed_slider_callback), NULL);
+  gtk_widget_set_name(movement_speed_slider, "movement_speed_slider");
+  gtk_container_add(GTK_CONTAINER(box), movement_speed_slider);
+
+  // Abort
+  add_button(box, "ABORT", ABORT, "abort_button");
 
   // CSS
   GtkCssProvider *css = gtk_css_provider_new();
