@@ -179,7 +179,7 @@ gboolean keypress_callback(GtkWidget *widget, GdkEventKey *event, gpointer data)
   if (event->keyval == GDK_KEY_Escape) {
     char command[256];
     sprintf(command, "M00\r\n");
-    sp_blocking_write(main_port, command, strlen(command), 1000);
+    sp_nonblocking_write(main_port, command, strlen(command));
 
     sp_free_port_list(port_list);
 
@@ -193,7 +193,7 @@ void slider_callback(GtkRange *range, gpointer userData) {
   float drill_speed = gtk_range_get_value(range);
   char command[256];
   sprintf(command, "M3 S%f\r\n", drill_speed);
-  int r = sp_blocking_write(main_port, command, strlen(command), 1000);
+  int r = sp_nonblocking_write(main_port, command, strlen(command));
   printf("%d\n", r);
 }
 
@@ -204,18 +204,11 @@ void movement_speed_slider_callback(GtkRange *range, gpointer userData) {
 void button_callback(GtkButton *button, gpointer userData) {
   command *data = (command *)userData;
 
-  if (data->movement_type == START_DRILL) {
-    char command[256];
-    sprintf(command, "M3 S%f\r\n", 0.f);
-    int r = sp_blocking_write(main_port, command, strlen(command), 1000);
+  {
+    char command[256] = "G91\r\n";
+    int r = sp_nonblocking_write(main_port, command, strlen(command));
     printf("%d\n", r);
   }
-  if (data->movement_type == STOP_DRILL) {
-    const char *command = "M3 S0\r\n";
-    int r = sp_blocking_write(main_port, command, strlen(command), 1000);
-    printf("%d\n", r);
-  }
-}
 
 void movement_callback(GtkButton *button, gpointer userData) {
   command *data = (command *)userData;
