@@ -149,6 +149,28 @@ gboolean render(GtkGLArea *area, GdkGLContext *context) {
   return TRUE;
 }
 
+void ports_init() {
+  enum sp_return result = sp_list_ports(&port_list);
+  if (result != SP_OK) {
+    fprintf(stderr, "sp_list_ports failed.\n");
+    exit(EXIT_FAILURE);
+  }
+
+  for (int i = 0; port_list[i] != NULL; i++) {
+    struct sp_port *port = port_list[i];
+    char *port_name = sp_get_port_name(port);
+
+    printf("Found port: %s\n", port_name);
+
+    if (strcmp(port_name, "/dev/ttyUSB0") == 0) {
+      sp_open(port_list[i], SP_MODE_READ_WRITE);
+      sp_set_baudrate(port_list[i], 112500);
+      main_port = port_list[i];
+      usleep(2 * 1000 * 1000);
+    }
+  }
+}
+
 gboolean keypress_callback(GtkWidget *widget, GdkEventKey *event, gpointer data) {
 
   if (event->keyval == GDK_KEY_Escape) {
@@ -231,38 +253,23 @@ void movement_callback(GtkButton *button, gpointer userData) {
     printf("Unrecognized movement type: %d\n", data->movement_type);
     break;
   }
+
+  int r = sp_nonblocking_write(main_port, command, strlen(command));
+  printf("%d\n", r);
 }
 
 void add_button(GtkWidget *box, const char *label, int movement_type, const char *name) {
   GtkWidget *button = gtk_button_new_with_label(label);
-  command *start_drill_command = (command *)malloc(sizeof(command));
-  start_drill_command->movement_type = movement_type;
-  g_signal_connect(button, "clicked", G_CALLBACK(button_callback), (gpointer)start_drill_command);
+  command *c = (command *)malloc(sizeof(command));
+  c->movement_type = movement_type;
+  g_signal_connect(button, "clicked", G_CALLBACK(button_callback), (gpointer)c);
   gtk_widget_set_name(button, name);
   gtk_container_add(GTK_CONTAINER(box), button);
 }
 
 int main(int argc, char *argv[]) {
 
-  enum sp_return result = sp_list_ports(&port_list);
-  if (result != SP_OK) {
-    fprintf(stderr, "sp_list_ports failed.\n");
-    exit(EXIT_FAILURE);
-  }
-
-  for (int i = 0; port_list[i] != NULL; i++) {
-    struct sp_port *port = port_list[i];
-    char *port_name = sp_get_port_name(port);
-
-    printf("Found port: %s\n", port_name);
-
-    if (strcmp(port_name, "/dev/ttyUSB0") == 0) {
-      sp_open(port_list[i], SP_MODE_READ_WRITE);
-      sp_set_baudrate(port_list[i], 112500);
-      main_port = port_list[i];
-      usleep(2 * 1000 * 1000);
-    }
-  }
+  ports_init();
 
   gtk_init(&argc, &argv);
 
