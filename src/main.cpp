@@ -16,10 +16,12 @@ enum MOVEMENT_TYPE {
   ABORT,
   START_DRILL,
   STOP_DRILL,
-  UP,
-  DOWN,
-  LEFT,
-  RIGHT
+  XM,
+  XP,
+  YM,
+  YP,
+  ZM,
+  ZP
 };
 
 typedef struct command {
@@ -278,9 +280,11 @@ int main(int argc, char *argv[]) {
   GtkWidget *window = gtk_window_new(GTK_WINDOW_TOPLEVEL);
   gtk_window_set_title(GTK_WINDOW(window), "CNC");
 
-  // Box
+  // Boxes
   GtkWidget *box = gtk_box_new(GTK_ORIENTATION_VERTICAL, FALSE);
   gtk_container_add(GTK_CONTAINER(window), box);
+  GtkWidget *hbox1 = gtk_box_new(GTK_ORIENTATION_HORIZONTAL, FALSE);
+  GtkWidget *hbox2 = gtk_box_new(GTK_ORIENTATION_HORIZONTAL, FALSE);
 
   // Drawing area
   GtkWidget *gl_area = gtk_gl_area_new();
