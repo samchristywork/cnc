@@ -189,7 +189,7 @@ gboolean keypress_callback(GtkWidget *widget, GdkEventKey *event, gpointer data)
   return FALSE;
 }
 
-void slider_callback(GtkRange *range, gpointer userData) {
+void drill_speed_slider_callback(GtkRange *range, gpointer userData) {
   float drill_speed = gtk_range_get_value(range);
   char command[256];
   sprintf(command, "M3 S%f\r\n", drill_speed);
@@ -210,10 +210,10 @@ void button_callback(GtkButton *button, gpointer userData) {
     printf("%d\n", r);
   }
 
-void movement_callback(GtkButton *button, gpointer userData) {
-  command *data = (command *)userData;
+  char command[256];
+  bzero(command, 256);
 
-  float speed = 200;
+  float speed = 1000;
 
   switch (data->movement_type) {
   case ABORT:
