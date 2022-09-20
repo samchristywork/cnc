@@ -13,6 +13,7 @@ struct sp_port *main_port;
 float dist_increment = 4;
 
 enum MOVEMENT_TYPE {
+  ABORT,
   START_DRILL,
   STOP_DRILL,
   UP,

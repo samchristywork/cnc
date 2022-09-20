@@ -1,5 +1,12 @@
-
 button#start_drill_button {
   color: red;
   background: green;
+}
+button {
+  min-width: 100px;
+}
+
+button#abort_button {
+  color: white;
+  background: red;
 }
