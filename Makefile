@@ -10,3 +10,5 @@ build/cnc: src/main.cpp
 
 clean:
 	rm -rf build/
+
+.PHONY: clean
