@@ -1,12 +1,7 @@
-#include <epoxy/gl.h>
-#include <glm/glm.hpp>
-#include <glm/gtc/matrix_transform.hpp>
+#include "raylib.h"
 #include <gtk/gtk.h>
 #include <libserialport.h>
 
-GLuint buffer;
-GLuint program;
-glm::mat4 model = glm::mat4(1.0);
 struct sp_port **port_list;
 struct sp_port *main_port;
 
@@ -27,133 +22,6 @@ enum MOVEMENT_TYPE {
 typedef struct command {
   int movement_type;
 } command;
-
-const GLfloat vertices[] = {
-    1, -1, -1, 0, -1, 0, 1, -1, 1, 0, -1, 0, -1, -1, 1, 0, -1, 0, 1, -1, -1, 0,
-    -1, 0, -1, -1, 1, 0, -1, 0, -1, -1, -1, 0, -1, 0, -1, 1, 1, 0, 1, 0, 1, 1, 1,
-    0, 1, 0, 1, 1, -1, 0, 1, 0, -1, 1, 1, 0, 1, 0, 1, 1, -1, 0, 1, 0, -1, 1, -1,
-    0, 1, 0, -1, -1, -1, -1, 0, 0, -1, -1, 1, -1, 0, 0, -1, 1, -1, -1, 0, 0, -1,
-    -1, 1, -1, 0, 0, -1, 1, 1, -1, 0, 0, -1, 1, -1, -1, 0, 0, -1, -1, 1, 0, 0, 1,
-    1, -1, 1, 0, 0, 1, -1, 1, 1, 0, 0, 1, 1, -1, 1, 0, 0, 1, 1, 1, 1, 0, 0, 1,
-    -1, 1, 1, 0, 0, 1, 1, 1, -1, 0, 0, -1, 1, -1, -1, 0, 0, -1, -1, -1, -1, 0, 0,
-    -1, 1, 1, -1, 0, 0, -1, -1, -1, -1, 0, 0, -1, -1, 1, -1, 0, 0, -1, 1, 1, 1,
-    1, 0, 0, 1, -1, 1, 1, 0, 0, 1, -1, -1, 1, 0, 0, 1, 1, 1, 1, 0, 0, 1, -1, -1,
-    1, 0, 0, 1, 1, -1, 1, 0, 0};
-
-GLuint init_shader(int type) {
-
-  GLuint shader = glCreateShader(type);
-
-  if (type == GL_FRAGMENT_SHADER) {
-    FILE *f = fopen("shaders/fragment.sl", "rb");
-    fseek(f, 0, SEEK_END);
-    size_t s = ftell(f);
-    rewind(f);
-    char *buf = (char *)malloc(s + 1);
-    bzero(buf, s + 1);
-    fread(buf, 1, s, f);
-    glShaderSource(shader, 1, &buf, NULL);
-    fclose(f);
-  }
-
-  if (type == GL_VERTEX_SHADER) {
-    FILE *f = fopen("shaders/vertex.sl", "rb");
-    fseek(f, 0, SEEK_END);
-    size_t s = ftell(f);
-    rewind(f);
-    char *buf = (char *)malloc(s + 1);
-    bzero(buf, s + 1);
-    fread(buf, 1, s, f);
-    glShaderSource(shader, 1, &buf, NULL);
-    fclose(f);
-  }
-
-  glCompileShader(shader);
-
-  int status;
-  glGetShaderiv(shader, GL_COMPILE_STATUS, &status);
-
-  return shader;
-}
-
-void init_shaders(GLuint *program) {
-  GLuint vertex, fragment;
-
-  vertex = init_shader(GL_VERTEX_SHADER);
-  fragment = init_shader(GL_FRAGMENT_SHADER);
-
-  *program = glCreateProgram();
-  glAttachShader(*program, vertex);
-  glAttachShader(*program, fragment);
-
-  glLinkProgram(*program);
-
-  glDeleteShader(vertex);
-  glDeleteShader(fragment);
-}
-
-void realize(GtkWidget *widget) {
-  gtk_gl_area_make_current(GTK_GL_AREA(widget));
-
-  glGenVertexArrays(1, &buffer);
-  glGenBuffers(1, &buffer);
-
-  glBindVertexArray(buffer);
-  glBindBuffer(GL_ARRAY_BUFFER, buffer);
-  glBufferData(GL_ARRAY_BUFFER, sizeof(vertices), vertices, GL_STATIC_DRAW);
-
-  glVertexAttribPointer(0, 3, GL_FLOAT, GL_FALSE, 6 * sizeof(float), (void *)0);
-  glEnableVertexAttribArray(0);
-  glVertexAttribPointer(1, 3, GL_FLOAT, GL_FALSE, 6 * sizeof(float), (void *)(3 * sizeof(float)));
-  glEnableVertexAttribArray(1);
-
-  glBindBuffer(GL_ARRAY_BUFFER, 0);
-
-  glBindVertexArray(0);
-
-  init_shaders(&program);
-
-  glEnable(GL_CULL_FACE);
-  glFrontFace(GL_CCW);
-  glCullFace(GL_BACK);
-  glEnable(GL_DEPTH_TEST);
-}
-
-void draw(GLuint program) {
-  glUseProgram(program);
-
-  glm::vec3 position = glm::vec3(0, 0, 5);
-  glm::vec3 front = glm::vec3(0, 0, -1);
-  glm::vec3 up = glm::vec3(0, 1, 0);
-
-  model = rotate(model, .01f, glm::vec3(1, 1, 1));
-  //model = translate(model, glm::vec3(.1, 0, 0));
-  glUniformMatrix4fv(glGetUniformLocation(program, "model"), 1, GL_FALSE, &model[0][0]);
-
-  glm::mat4 view = glm::lookAt(position, position + front, up);
-  glUniformMatrix4fv(glGetUniformLocation(program, "view"), 1, GL_FALSE, &view[0][0]);
-
-  double aspect_ratio = 1;
-  glm::mat4 projection = glm::perspective(45.0, aspect_ratio, 0.1, 100.0);
-  glUniformMatrix4fv(glGetUniformLocation(program, "projection"), 1, GL_FALSE, &projection[0][0]);
-
-  glBindVertexArray(buffer);
-  glDrawArrays(GL_TRIANGLES, 0, 36);
-
-  glBindBuffer(GL_ARRAY_BUFFER, 0);
-  glUseProgram(0);
-}
-
-gboolean render(GtkGLArea *area, GdkGLContext *context) {
-
-  glClearColor(0.0, 0.0, 0.0, 1.0);
-  glClear(GL_COLOR_BUFFER_BIT | GL_DEPTH_BUFFER_BIT);
-
-  draw(program);
-
-  gtk_gl_area_queue_render(area);
-  return TRUE;
-}
 
 void ports_init() {
   enum sp_return result = sp_list_ports(&port_list);
@@ -266,66 +134,145 @@ void add_button(GtkWidget *box, const char *label, int movement_type, const char
   gtk_container_add(GTK_CONTAINER(box), button);
 }
 
+void die() {
+  exit(EXIT_FAILURE);
+}
+
 int main(int argc, char *argv[]) {
 
-  ports_init();
+  pid_t pid = fork();
+  if (pid < 0) {
+    die();
+  }
+  if (pid) {
 
-  gtk_init(&argc, &argv);
+    SetConfigFlags(FLAG_MSAA_4X_HINT);
+    SetConfigFlags(FLAG_WINDOW_RESIZABLE);
+    SetTraceLogLevel(LOG_NONE);
+    InitWindow(0, 0, "CNC");
 
-  // Main window
-  GtkWidget *window = gtk_window_new(GTK_WINDOW_TOPLEVEL);
-  gtk_window_set_title(GTK_WINDOW(window), "CNC");
+    Camera camera = {0};
+    camera.position = (Vector3){10.0f, 10.0f, 10.0f};
+    camera.target = (Vector3){0.0f, 0.0f, 0.0f};
+    camera.up = (Vector3){0.0f, 1.0f, 0.0f};
+    camera.fovy = 45.0f;
+    camera.projection = CAMERA_PERSPECTIVE;
+    Model model1 = LoadModel("untitled.obj");
+    Model model2 = LoadModel("bit.obj");
+    Model model3 = LoadModel("hi.obj");
+    //Texture2D texture = LoadTexture("untitled.png");
+    //model.materials[0].maps[MATERIAL_MAP_DIFFUSE].texture = texture;
+    SetCameraMode(camera, CAMERA_FREE);
 
-  // Boxes
-  GtkWidget *box = gtk_box_new(GTK_ORIENTATION_VERTICAL, FALSE);
-  gtk_container_add(GTK_CONTAINER(window), box);
-  GtkWidget *hbox1 = gtk_box_new(GTK_ORIENTATION_HORIZONTAL, FALSE);
-  GtkWidget *hbox2 = gtk_box_new(GTK_ORIENTATION_HORIZONTAL, FALSE);
+    SetTargetFPS(60);
 
-  // Drawing area
-  GtkWidget *gl_area = gtk_gl_area_new();
-  gtk_box_pack_start(GTK_BOX(box), gl_area, 1, 1, 0);
+    Vector3 cubePosition = {0.0f, 0.0f, 0.0f};
+    Vector3 cubeSize = {1.0f, 1.0f, 1.0f};
+    Vector2 cubeScreenPosition = {0.0f, 0.0f};
 
-  // Buttons
-  add_button(box, "Start Drill", START_DRILL, "start_drill_button");
-  add_button(box, "Stop Drill", STOP_DRILL, "stop_drill_button");
-  gtk_container_add(GTK_CONTAINER(box), hbox1);
-  add_button(hbox1, "Z- (Q)", ZM, "zm_button");
-  add_button(hbox1, "Y+ (W)", YP, "yp_button");
-  add_button(hbox1, "Z+ (E)", ZP, "zp_button");
-  gtk_container_add(GTK_CONTAINER(box), hbox2);
-  add_button(hbox2, "X- (A)", XM, "xm_button");
-  add_button(hbox2, "Y- (S)", YM, "ym_button");
-  add_button(hbox2, "X+ (D)", XP, "xp_button");
+    Ray ray = {0};
 
-  // Sliders
-  GtkWidget *drill_speed_slider = gtk_scale_new_with_range(GTK_ORIENTATION_HORIZONTAL, 0, 10000, .01);
-  g_signal_connect(drill_speed_slider, "value-changed", G_CALLBACK(drill_speed_slider_callback), NULL);
-  gtk_widget_set_name(drill_speed_slider, "drill_speed_slider");
-  gtk_container_add(GTK_CONTAINER(box), drill_speed_slider);
+    RayCollision collision = {0};
 
-  GtkWidget *movement_speed_slider = gtk_scale_new_with_range(GTK_ORIENTATION_HORIZONTAL, 0, 3, .001);
-  g_signal_connect(movement_speed_slider, "value-changed", G_CALLBACK(movement_speed_slider_callback), NULL);
-  gtk_widget_set_name(movement_speed_slider, "movement_speed_slider");
-  gtk_container_add(GTK_CONTAINER(box), movement_speed_slider);
+    while (!WindowShouldClose()) {
+      UpdateCamera(&camera);
+      if (IsMouseButtonPressed(MOUSE_BUTTON_LEFT)) {
+        if (!collision.hit) {
+          ray = GetMouseRay(GetMousePosition(), camera);
 
-  // Abort
-  add_button(box, "ABORT", ABORT, "abort_button");
+          collision = GetRayCollisionBox(ray,
+                                         (BoundingBox){(Vector3){cubePosition.x - cubeSize.x / 2, cubePosition.y - cubeSize.y / 2, cubePosition.z - cubeSize.z / 2},
+                                                       (Vector3){cubePosition.x + cubeSize.x / 2, cubePosition.y + cubeSize.y / 2, cubePosition.z + cubeSize.z / 2}});
+        } else
+          collision.hit = false;
+      }
+      cubeScreenPosition = GetWorldToScreen((Vector3){cubePosition.x, cubePosition.y + 2.5f, cubePosition.z}, camera);
+      BeginDrawing();
+      ClearBackground(RAYWHITE);
+      DrawFPS(10, 10);
+      BeginMode3D(camera);
 
-  // CSS
-  GtkCssProvider *css = gtk_css_provider_new();
-  gtk_css_provider_load_from_path(css, "style.css", NULL);
-  gtk_style_context_add_provider_for_screen(gdk_screen_get_default(), GTK_STYLE_PROVIDER(css), GTK_STYLE_PROVIDER_PRIORITY_USER);
+      DrawModelEx(model1, {0,0,0}, {1,0,0}, 90, {4,4,4}, CLITERAL(Color){200,100,100,255});
+      DrawModelWiresEx(model1, {0,0,0}, {1,0,0}, 90, {4,4,4}, CLITERAL(Color){130,30,30,255});
+      DrawModelEx(model2, {0,0,0}, {1,0,0}, 0, {1,1,1}, CLITERAL(Color){100,200,100,255});
+      DrawModelWiresEx(model2, {0,0,0}, {1,0,0}, 0, {1,1,1}, CLITERAL(Color){30,130,30,255});
+      DrawModelEx(model3, {0,0,0}, {0,-1,0}, 90, {.75,.75,.75}, CLITERAL(Color){100,100,200,255});
+      DrawModelWiresEx(model3, {0,0,0}, {0,-1,0}, 90, {.75,.75,.75}, CLITERAL(Color){30,30,130,255});
 
-  // Signals
-  g_signal_connect(gl_area, "realize", G_CALLBACK(realize), NULL);
-  g_signal_connect(gl_area, "render", G_CALLBACK(render), NULL);
+      DrawGrid(100, 1.0f);
 
-  // Events
-  gtk_widget_add_events(window, GDK_KEY_PRESS_MASK);
-  g_signal_connect(G_OBJECT(window), "key_press_event", G_CALLBACK(keypress_callback), NULL);
+      EndMode3D();
+      DrawText("Enemy: 100 / 100", (int)cubeScreenPosition.x - MeasureText("Enemy: 100/100", 20) / 2, (int)cubeScreenPosition.y, 20, BLACK);
+      if (collision.hit)
+        DrawText("BOX SELECTED", 10, 10, 30, GREEN);
+      EndDrawing();
+    }
 
-  // Main loop
-  gtk_widget_show_all(GTK_WIDGET(window));
-  gtk_main();
+    CloseWindow();
+  } else {
+    usleep(1000 * 1000);
+
+    ports_init();
+
+    gtk_init(&argc, &argv);
+
+    // Main window
+    GtkWidget *window = gtk_window_new(GTK_WINDOW_TOPLEVEL);
+    gtk_window_set_resizable(GTK_WINDOW(window), false);
+    gtk_window_set_title(GTK_WINDOW(window), "CNC");
+
+    // Boxes
+    GtkWidget *box = gtk_box_new(GTK_ORIENTATION_VERTICAL, FALSE);
+    gtk_container_add(GTK_CONTAINER(window), box);
+    GtkWidget *hbox1 = gtk_box_new(GTK_ORIENTATION_HORIZONTAL, FALSE);
+    GtkWidget *hbox2 = gtk_box_new(GTK_ORIENTATION_HORIZONTAL, FALSE);
+
+    // Buttons
+    add_button(box, "Start Drill", START_DRILL, "start_drill_button");
+    add_button(box, "Stop Drill", STOP_DRILL, "stop_drill_button");
+    gtk_container_add(GTK_CONTAINER(box), hbox1);
+    add_button(hbox1, "Z- (Q)", ZM, "zm_button");
+    add_button(hbox1, "Y+ (W)", YP, "yp_button");
+    add_button(hbox1, "Z+ (E)", ZP, "zp_button");
+    gtk_container_add(GTK_CONTAINER(box), hbox2);
+    add_button(hbox2, "X- (A)", XM, "xm_button");
+    add_button(hbox2, "Y- (S)", YM, "ym_button");
+    add_button(hbox2, "X+ (D)", XP, "xp_button");
+
+    // Sliders
+    GtkWidget *drill_speed_slider = gtk_scale_new_with_range(GTK_ORIENTATION_HORIZONTAL, 0, 10000, .01);
+    g_signal_connect(drill_speed_slider, "value-changed", G_CALLBACK(drill_speed_slider_callback), NULL);
+    gtk_widget_set_name(drill_speed_slider, "drill_speed_slider");
+    gtk_container_add(GTK_CONTAINER(box), drill_speed_slider);
+
+    GtkWidget *movement_speed_slider = gtk_scale_new_with_range(GTK_ORIENTATION_HORIZONTAL, 0, 3, .001);
+    g_signal_connect(movement_speed_slider, "value-changed", G_CALLBACK(movement_speed_slider_callback), NULL);
+    gtk_widget_set_name(movement_speed_slider, "movement_speed_slider");
+    gtk_container_add(GTK_CONTAINER(box), movement_speed_slider);
+
+    // Abort
+    add_button(box, "ABORT", ABORT, "abort_button");
+
+    // CSS
+    GtkCssProvider *css = gtk_css_provider_new();
+    gtk_css_provider_load_from_path(css, "style.css", NULL);
+    gtk_style_context_add_provider_for_screen(gdk_screen_get_default(), GTK_STYLE_PROVIDER(css), GTK_STYLE_PROVIDER_PRIORITY_USER);
+
+    // Events
+    gtk_widget_add_events(window, GDK_KEY_PRESS_MASK);
+    g_signal_connect(G_OBJECT(window), "key_press_event", G_CALLBACK(keypress_callback), NULL);
+
+    char asdf[256];
+    sp_blocking_read(main_port, asdf, 255, 1000);
+    char command[256] = "M3 S100.\r\n";
+    sp_blocking_write(main_port, command, strlen(command), 1000);
+    puts(command);
+    bzero(command, 256);
+    sp_blocking_read(main_port, command, 255, 1000);
+    puts(command);
+
+    // Main loop
+    gtk_widget_show_all(GTK_WIDGET(window));
+    gtk_main();
+  }
 }
