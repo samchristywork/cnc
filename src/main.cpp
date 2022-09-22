@@ -210,12 +210,12 @@ int main(int argc, char *argv[]) {
       DrawFPS(10, 10);
       BeginMode3D(camera);
 
-      DrawModelEx(model1, {0,0,0}, {1,0,0}, 90, {4,4,4}, CLITERAL(Color){200,100,100,255});
-      DrawModelWiresEx(model1, {0,0,0}, {1,0,0}, 90, {4,4,4}, CLITERAL(Color){130,30,30,255});
-      DrawModelEx(model2, {0,0,0}, {1,0,0}, 0, {1,1,1}, CLITERAL(Color){100,200,100,255});
-      DrawModelWiresEx(model2, {0,0,0}, {1,0,0}, 0, {1,1,1}, CLITERAL(Color){30,130,30,255});
-      DrawModelEx(model3, {0,0,0}, {0,-1,0}, 90, {.75,.75,.75}, CLITERAL(Color){100,100,200,255});
-      DrawModelWiresEx(model3, {0,0,0}, {0,-1,0}, 90, {.75,.75,.75}, CLITERAL(Color){30,30,130,255});
+      DrawModelEx(model1, {0,0,0}, {1,0,0}, 180, {4,4,4}, CLITERAL(Color){200,100,100,255});
+      DrawModelWiresEx(model1, {0,0,0}, {1,0,0}, 180, {4,4,4}, CLITERAL(Color){130,30,30,255});
+      DrawModelEx(model2, {0,0,0}, {1,0,0}, 90, {1,1,1}, CLITERAL(Color){100,200,100,255});
+      DrawModelWiresEx(model2, {0,0,0}, {1,0,0}, 90, {1,1,1}, CLITERAL(Color){30,130,30,255});
+      DrawModelEx(model3, {0,0,0}, {0,0,1}, -90, {.75,.75,.75}, CLITERAL(Color){100,100,200,255});
+      DrawModelWiresEx(model3, {0,0,0}, {0,0,1}, -90, {.75,.75,.75}, CLITERAL(Color){30,30,130,255});
 
       DrawGrid(100, 1.0f);
 
