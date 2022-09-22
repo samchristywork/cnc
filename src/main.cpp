@@ -1,7 +1,7 @@
 #include "raylib.h"
 #include <gtk/gtk.h>
-#include <math.h>
 #include <libserialport.h>
+#include <math.h>
 
 struct sp_port **port_list;
 struct sp_port *main_port;
@@ -179,21 +179,21 @@ int main(int argc, char *argv[]) {
 
     RayCollision collision = {0};
 
-    float angle=0;
+    float angle = 0;
 
     while (!WindowShouldClose()) {
       UpdateCamera(&camera);
       if (IsKeyDown('Q')) {
-        camera.target.y-=.1;
+        camera.target.y -= .1;
       }
       if (IsKeyDown('E')) {
-        camera.target.y+=.1;
+        camera.target.y += .1;
       }
       if (IsKeyDown('D')) {
-        angle+=.1;
+        angle += .1;
       }
-      camera.position.x=10.f*sin(angle);
-      camera.position.z=10.f*cos(angle);
+      camera.position.x = 10.f * sin(angle);
+      camera.position.z = 10.f * cos(angle);
       if (IsMouseButtonPressed(MOUSE_BUTTON_LEFT)) {
         if (!collision.hit) {
           ray = GetMouseRay(GetMousePosition(), camera);
@@ -210,12 +210,12 @@ int main(int argc, char *argv[]) {
       DrawFPS(10, 10);
       BeginMode3D(camera);
 
-      DrawModelEx(model1, {0,0,0}, {1,0,0}, 180, {4,4,4}, CLITERAL(Color){200,100,100,255});
-      DrawModelWiresEx(model1, {0,0,0}, {1,0,0}, 180, {4,4,4}, CLITERAL(Color){130,30,30,255});
-      DrawModelEx(model2, {0,0,0}, {1,0,0}, 90, {1,1,1}, CLITERAL(Color){100,200,100,255});
-      DrawModelWiresEx(model2, {0,0,0}, {1,0,0}, 90, {1,1,1}, CLITERAL(Color){30,130,30,255});
-      DrawModelEx(model3, {0,0,0}, {0,0,1}, -90, {.75,.75,.75}, CLITERAL(Color){100,100,200,255});
-      DrawModelWiresEx(model3, {0,0,0}, {0,0,1}, -90, {.75,.75,.75}, CLITERAL(Color){30,30,130,255});
+      DrawModelEx(model1, {0, 0, 0}, {1, 0, 0}, 180, {4, 4, 4}, CLITERAL(Color){200, 100, 100, 255});
+      DrawModelWiresEx(model1, {0, 0, 0}, {1, 0, 0}, 180, {4, 4, 4}, CLITERAL(Color){130, 30, 30, 255});
+      DrawModelEx(model2, {0, 0, 0}, {1, 0, 0}, 90, {1, 1, 1}, CLITERAL(Color){100, 200, 100, 255});
+      DrawModelWiresEx(model2, {0, 0, 0}, {1, 0, 0}, 90, {1, 1, 1}, CLITERAL(Color){30, 130, 30, 255});
+      DrawModelEx(model3, {0, 0, 0}, {0, 0, 1}, -90, {.75, .75, .75}, CLITERAL(Color){100, 100, 200, 255});
+      DrawModelWiresEx(model3, {0, 0, 0}, {0, 0, 1}, -90, {.75, .75, .75}, CLITERAL(Color){30, 30, 130, 255});
 
       DrawGrid(100, 1.0f);
 
