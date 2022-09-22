@@ -280,15 +280,6 @@ int main(int argc, char *argv[]) {
     gtk_widget_add_events(window, GDK_KEY_PRESS_MASK);
     g_signal_connect(G_OBJECT(window), "key_press_event", G_CALLBACK(keypress_callback), NULL);
 
-    //char asdf[256];
-    //sp_blocking_read(main_port, asdf, 255, 1000);
-    //char command[256] = "M3 S100.\r\n";
-    //sp_blocking_write(main_port, command, strlen(command), 1000);
-    //puts(command);
-    //bzero(command, 256);
-    //sp_blocking_read(main_port, command, 255, 1000);
-    //puts(command);
-
     // Main loop
     gtk_widget_show_all(GTK_WIDGET(window));
     gtk_main();
