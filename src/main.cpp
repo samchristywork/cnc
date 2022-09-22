@@ -162,6 +162,9 @@ int main(int argc, char *argv[]) {
     Model model2 = LoadModel("models/bit.obj");
     Model model3 = LoadModel("models/chuck.obj");
 
+    Shader shader = LoadShader(0, "shaders/grayscale.fs");
+    model3.materials[0].shader = shader;
+
     //Texture2D texture = LoadTexture("untitled.png");
     //model.materials[0].maps[MATERIAL_MAP_DIFFUSE].texture = texture;
     SetCameraMode(camera, CAMERA_FREE);
