@@ -158,9 +158,10 @@ int main(int argc, char *argv[]) {
     camera.up = (Vector3){0.0f, 1.0f, 0.0f};
     camera.fovy = 45.0f;
     camera.projection = CAMERA_PERSPECTIVE;
-    Model model1 = LoadModel("untitled.obj");
-    Model model2 = LoadModel("bit.obj");
-    Model model3 = LoadModel("hi.obj");
+    Model model1 = LoadModel("models/collet.obj");
+    Model model2 = LoadModel("models/bit.obj");
+    Model model3 = LoadModel("models/chuck.obj");
+
     //Texture2D texture = LoadTexture("untitled.png");
     //model.materials[0].maps[MATERIAL_MAP_DIFFUSE].texture = texture;
     SetCameraMode(camera, CAMERA_FREE);
