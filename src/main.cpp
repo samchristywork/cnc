@@ -220,7 +220,7 @@ int main(int argc, char *argv[]) {
       DrawGrid(100, 1.0f);
 
       EndMode3D();
-      DrawText("Enemy: 100 / 100", (int)cubeScreenPosition.x - MeasureText("Enemy: 100/100", 20) / 2, (int)cubeScreenPosition.y, 20, BLACK);
+      DrawText("Drill Speed: 100 / 100", (int)cubeScreenPosition.x - MeasureText("Enemy: 100/100", 20) / 2, (int)cubeScreenPosition.y, 20, BLACK);
       if (collision.hit)
         DrawText("BOX SELECTED", 10, 10, 30, GREEN);
       EndDrawing();
