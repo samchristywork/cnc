@@ -1,5 +1,6 @@
 #include "raylib.h"
 #include <gtk/gtk.h>
+#include <math.h>
 #include <libserialport.h>
 
 struct sp_port **port_list;
@@ -174,8 +175,21 @@ int main(int argc, char *argv[]) {
 
     RayCollision collision = {0};
 
+    float angle=0;
+
     while (!WindowShouldClose()) {
       UpdateCamera(&camera);
+      if (IsKeyDown('Q')) {
+        camera.target.y-=.1;
+      }
+      if (IsKeyDown('E')) {
+        camera.target.y+=.1;
+      }
+      if (IsKeyDown('D')) {
+        angle+=.1;
+      }
+      camera.position.x=10.f*sin(angle);
+      camera.position.z=10.f*cos(angle);
       if (IsMouseButtonPressed(MOUSE_BUTTON_LEFT)) {
         if (!collision.hit) {
           ray = GetMouseRay(GetMousePosition(), camera);
