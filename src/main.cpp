@@ -360,7 +360,10 @@ int main(int argc, char *argv[]) {
   gtk_widget_set_name(movement_speed_slider, "movement_speed_slider");
   gtk_container_add(GTK_CONTAINER(box), movement_speed_slider);
 
-  // Abort
+  // Run Program Button
+  add_button(box, "Run Program", PROGRAM, "program_button");
+
+  // Abort Button
   add_button(box, "ABORT", ABORT, "abort_button");
 
   // CSS
