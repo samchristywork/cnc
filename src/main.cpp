@@ -94,6 +94,14 @@ void ports_init() {
   }
 }
 
+void draw_line(float xoff, float yoff, float x0, float y0, float x1, float y1, float depth) {
+  SEND_COMMAND_BLOCKING("G1 F1000 S1000 X%f Y%f Z0\r\n", x0, y0);
+  SEND_COMMAND_BLOCKING("G1 F100 S1000 X%f Y%f Z%f\r\n", x0, y0, -depth);
+  SEND_COMMAND_BLOCKING("G1 F100 S1000 X%f Y%f Z%f\r\n", x1, y1, -depth);
+  SEND_COMMAND_BLOCKING("G1 F100 S1000 X%f Y%f Z0\r\n", x1, y1);
+  SEND_COMMAND_BLOCKING("G1 F1000 S1000 X0 Y0 Z0\r\n");
+}
+
 void run_program() {
   SEND_COMMAND_BLOCKING("G21\r\n"); // Millimeters
   usleep(1000 * 100);
