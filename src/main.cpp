@@ -3,6 +3,24 @@
 #include <libserialport.h>
 #include <math.h>
 
+#define SEND_COMMAND_NONBLOCKING(...)                                  \
+  {                                                                    \
+    char command[256];                                                 \
+    sprintf(command, ##__VA_ARGS__);                                   \
+    printf("Sending command: %s", command);                            \
+    int r = sp_nonblocking_write(main_port, command, strlen(command)); \
+    printf("ret: %d\n", r);                                            \
+  }
+
+#define SEND_COMMAND_BLOCKING(...)                                        \
+  {                                                                       \
+    char command[256];                                                    \
+    sprintf(command, ##__VA_ARGS__);                                      \
+    printf("Sending command: %s", command);                               \
+    int r = sp_blocking_write(main_port, command, strlen(command), 1000); \
+    printf("ret: %d\n", r);                                               \
+  }
+
 /*
  * The list of ports available to this program.
  */
@@ -81,9 +99,7 @@ void ports_init() {
 gboolean keypress_callback(GtkWidget *widget, GdkEventKey *event, gpointer data) {
 
   if (event->keyval == GDK_KEY_Escape) {
-    char command[256];
-    sprintf(command, "M00\r\n");
-    sp_nonblocking_write(main_port, command, strlen(command));
+    SEND_COMMAND_BLOCKING("M00\r\n");
 
     sp_free_port_list(port_list);
 
@@ -98,10 +114,7 @@ gboolean keypress_callback(GtkWidget *widget, GdkEventKey *event, gpointer data)
  */
 void drill_speed_slider_callback(GtkRange *range, gpointer userData) {
   float drill_speed = gtk_range_get_value(range);
-  char command[256];
-  sprintf(command, "M3 S%f\r\n", drill_speed);
-  int r = sp_nonblocking_write(main_port, command, strlen(command));
-  printf("%d\n", r);
+  SEND_COMMAND_NONBLOCKING("M3 S%f\r\n", drill_speed);
 }
 
 /*
@@ -135,36 +148,35 @@ void button_callback(GtkButton *button, gpointer userData) {
     ports_init();
     break;
   case START_DRILL:
-    sprintf(command, "M3 S%f\r\n", 100.f);
+    SEND_COMMAND_BLOCKING("G91 M3 S%f\r\n", 100.f);
     break;
   case STOP_DRILL:
-    sprintf(command, "M3 S%f\r\n", 0.f);
+    SEND_COMMAND_BLOCKING("G91 M3 S%f\r\n", 0.f);
+    break;
     break;
   case XP:
-    sprintf(command, "G1 F%f X%f Y0 Z0\r\n", speed, dist_increment);
+    SEND_COMMAND_BLOCKING("G91 G1 F%f X%f Y0 Z0\r\n", speed, dist_increment);
     break;
   case XM:
-    sprintf(command, "G1 F%f X%f Y0 Z0\r\n", speed, -dist_increment);
+    SEND_COMMAND_BLOCKING("G91 G1 F%f X%f Y0 Z0\r\n", speed, -dist_increment);
     break;
   case YP:
-    sprintf(command, "G1 F%f X0 Y%f Z0\r\n", speed, dist_increment);
+    SEND_COMMAND_BLOCKING("G91 G1 F%f X0 Y%f Z0\r\n", speed, dist_increment);
     break;
   case YM:
-    sprintf(command, "G1 F%f X0 Y%f Z0\r\n", speed, -dist_increment);
+    SEND_COMMAND_BLOCKING("G91 G1 F%f X0 Y%f Z0\r\n", speed, -dist_increment);
     break;
   case ZP:
-    sprintf(command, "G1 F%f X0 Y0 Z%f\r\n", speed, dist_increment);
+    SEND_COMMAND_BLOCKING("G91 G1 F%f X0 Y0 Z%f\r\n", speed, dist_increment);
     break;
   case ZM:
-    sprintf(command, "G1 F%f X0 Y0 Z%f\r\n", speed, -dist_increment);
+    SEND_COMMAND_BLOCKING("G91 G1 F%f X0 Y0 Z%f\r\n", speed, -dist_increment);
     break;
   default:
     printf("Unrecognized movement type: %d\n", data->movement_type);
     break;
   }
 
-  int r = sp_nonblocking_write(main_port, command, strlen(command));
-  printf("%d\n", r);
 }
 
 /*
