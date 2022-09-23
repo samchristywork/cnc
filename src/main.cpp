@@ -43,6 +43,7 @@ enum MOVEMENT_TYPE {
   ABORT,
   START_DRILL,
   STOP_DRILL,
+  PROGRAM,
   XM,
   XP,
   YM,
@@ -93,6 +94,33 @@ void ports_init() {
   }
 }
 
+void run_program() {
+  SEND_COMMAND_BLOCKING("G21\r\n"); // Millimeters
+  usleep(1000 * 100);
+  SEND_COMMAND_BLOCKING("G90\r\n"); // Absolute coordinates
+  usleep(1000 * 100);
+  SEND_COMMAND_BLOCKING("G10 L20 P1 X0 Y0 Z0\r\n"); // Magic
+  usleep(1000 * 100);
+
+  SEND_COMMAND_BLOCKING("G17\r\n"); // Select XY plane
+  usleep(1000 * 1000);
+  for (float f = 1; f < 20; f+=2) {
+    float radius = f;
+    SEND_COMMAND_BLOCKING("G1 F200 X-%f Y0\r\n", radius);
+    usleep(1000 * 1000);
+    SEND_COMMAND_BLOCKING("G02 F200 X0 Y%f I%f J0\r\n", radius, radius);
+    usleep(1000 * 1000);
+    SEND_COMMAND_BLOCKING("G02 F200 X%f Y0 I0. J-%f\r\n", radius, radius);
+    usleep(1000 * 1000);
+    SEND_COMMAND_BLOCKING("G02 F200 X0 Y-%f I-%f J0\r\n", radius, radius);
+    usleep(1000 * 1000);
+    SEND_COMMAND_BLOCKING("G02 F200 X-%f Y0 I0 J%f\r\n", radius, radius);
+    usleep(1000 * 1000);
+    SEND_COMMAND_BLOCKING("G1 F200 X0 Y0\r\n");
+    usleep(1000 * 1000);
+  }
+}
+
 /*
  * Callback for key press events.
  */
@@ -130,14 +158,6 @@ void movement_speed_slider_callback(GtkRange *range, gpointer userData) {
 void button_callback(GtkButton *button, gpointer userData) {
   command *data = (command *)userData;
 
-  {
-    char command[256] = "G91\r\n";
-    int r = sp_nonblocking_write(main_port, command, strlen(command));
-    printf("%d\n", r);
-  }
-
-  char command[256];
-  bzero(command, 256);
 
   float speed = 1000;
 
@@ -153,6 +173,8 @@ void button_callback(GtkButton *button, gpointer userData) {
   case STOP_DRILL:
     SEND_COMMAND_BLOCKING("G91 M3 S%f\r\n", 0.f);
     break;
+  case PROGRAM:
+    run_program();
     break;
   case XP:
     SEND_COMMAND_BLOCKING("G91 G1 F%f X%f Y0 Z0\r\n", speed, dist_increment);
