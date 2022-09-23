@@ -3,11 +3,24 @@
 #include <libserialport.h>
 #include <math.h>
 
+/*
+ * The list of ports available to this program.
+ */
 struct sp_port **port_list;
+
+/*
+ * The port that this program sends gcode to.
+ */
 struct sp_port *main_port;
 
+/*
+ * The amount of distance (mm) that the drill should move per button press.
+ */
 float dist_increment = 4;
 
+/*
+ * An enum to indicate the type of action to perform.
+ */
 enum MOVEMENT_TYPE {
   ABORT,
   START_DRILL,
@@ -20,10 +33,20 @@ enum MOVEMENT_TYPE {
   ZP
 };
 
+/*
+ * A data structure to be used for button press callbacks.
+ */
 typedef struct command {
   int movement_type;
 } command;
 
+/*
+ * Exit the program safely.
+ */
+
+/*
+ * Initialize the serial port.
+ */
 void ports_init() {
   enum sp_return result = sp_list_ports(&port_list);
   if (result != SP_OK) {
@@ -46,6 +69,9 @@ void ports_init() {
   }
 }
 
+/*
+ * Callback for key press events.
+ */
 gboolean keypress_callback(GtkWidget *widget, GdkEventKey *event, gpointer data) {
 
   if (event->keyval == GDK_KEY_Escape) {
@@ -61,6 +87,9 @@ gboolean keypress_callback(GtkWidget *widget, GdkEventKey *event, gpointer data)
   return FALSE;
 }
 
+/*
+ * Callback for the drill speed slider.
+ */
 void drill_speed_slider_callback(GtkRange *range, gpointer userData) {
   float drill_speed = gtk_range_get_value(range);
   char command[256];
@@ -69,10 +98,16 @@ void drill_speed_slider_callback(GtkRange *range, gpointer userData) {
   printf("%d\n", r);
 }
 
+/*
+ * Callback for the movement speed slider.
+ */
 void movement_speed_slider_callback(GtkRange *range, gpointer userData) {
   dist_increment = gtk_range_get_value(range);
 }
 
+/*
+ * Callback for the various buttons.
+ */
 void button_callback(GtkButton *button, gpointer userData) {
   command *data = (command *)userData;
 
@@ -126,6 +161,9 @@ void button_callback(GtkButton *button, gpointer userData) {
   printf("%d\n", r);
 }
 
+/*
+ * Adds a button widget to the GUI.
+ */
 void add_button(GtkWidget *box, const char *label, int movement_type, const char *name) {
   GtkWidget *button = gtk_button_new_with_label(label);
   command *c = (command *)malloc(sizeof(command));
@@ -147,6 +185,9 @@ int main(int argc, char *argv[]) {
   }
   if (pid) {
 
+    /*
+     * Thread that handles rendering the drill bit.
+     */
     SetConfigFlags(FLAG_MSAA_4X_HINT);
     SetConfigFlags(FLAG_WINDOW_RESIZABLE);
     SetTraceLogLevel(LOG_NONE);
@@ -228,6 +269,10 @@ int main(int argc, char *argv[]) {
 
     CloseWindow();
   } else {
+
+    /*
+     * Thread that handles rendering the GTK gui.
+     */
     usleep(1000 * 1000);
 
     ports_init();
