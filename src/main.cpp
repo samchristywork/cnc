@@ -43,6 +43,12 @@ typedef struct command {
 /*
  * Exit the program safely.
  */
+void die() {
+  /*
+   * TODO: Shut down all program threads and free memory here.
+   */
+  exit(EXIT_FAILURE);
+}
 
 /*
  * Initialize the serial port.
@@ -81,7 +87,7 @@ gboolean keypress_callback(GtkWidget *widget, GdkEventKey *event, gpointer data)
 
     sp_free_port_list(port_list);
 
-    exit(EXIT_SUCCESS);
+    die();
     return TRUE;
   }
   return FALSE;
@@ -171,10 +177,6 @@ void add_button(GtkWidget *box, const char *label, int movement_type, const char
   g_signal_connect(button, "clicked", G_CALLBACK(button_callback), (gpointer)c);
   gtk_widget_set_name(button, name);
   gtk_container_add(GTK_CONTAINER(box), button);
-}
-
-void die() {
-  exit(EXIT_FAILURE);
 }
 
 int main(int argc, char *argv[]) {
