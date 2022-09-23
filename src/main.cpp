@@ -320,6 +320,10 @@ int main(int argc, char *argv[]) {
 
   ports_init();
 
+  SEND_COMMAND_BLOCKING("G21\r\n");                 // Millimeters
+  SEND_COMMAND_BLOCKING("G90\r\n");                 // Absolute coordinates
+  SEND_COMMAND_BLOCKING("G10 L20 P1 X0 Y0 Z0\r\n"); // Magic
+
   gtk_init(&argc, &argv);
 
   // Main window
