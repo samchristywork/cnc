@@ -87,7 +87,7 @@ void ports_init() {
 
     if (strcmp(port_name, "/dev/ttyUSB0") == 0) {
       sp_open(port_list[i], SP_MODE_READ_WRITE);
-      sp_set_baudrate(port_list[i], 112500);
+      sp_set_baudrate(port_list[i], 115200);
       main_port = port_list[i];
       usleep(2 * 1000 * 1000);
     }
