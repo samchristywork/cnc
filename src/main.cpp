@@ -103,10 +103,8 @@ void draw_line(float xoff, float yoff, float x0, float y0, float x1, float y1, f
 }
 
 void run_program() {
-  SEND_COMMAND_BLOCKING("G21\r\n"); // Millimeters
-  usleep(1000 * 100);
-  SEND_COMMAND_BLOCKING("G90\r\n"); // Absolute coordinates
-  usleep(1000 * 100);
+  SEND_COMMAND_BLOCKING("G21\r\n");                 // Millimeters
+  SEND_COMMAND_BLOCKING("G90\r\n");                 // Absolute coordinates
   SEND_COMMAND_BLOCKING("G10 L20 P1 X0 Y0 Z0\r\n"); // Magic
   usleep(1000 * 100);
 
