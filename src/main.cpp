@@ -212,12 +212,16 @@ void button_callback(GtkButton *button, gpointer userData) {
 /*
  * Adds a button widget to the GUI.
  */
-void add_button(GtkWidget *box, const char *label, int movement_type, const char *name) {
+void add_button(GtkWidget *box, const char *label, int movement_type, const char *name, const char *css_class) {
   GtkWidget *button = gtk_button_new_with_label(label);
   command *c = (command *)malloc(sizeof(command));
   c->movement_type = movement_type;
   g_signal_connect(button, "clicked", G_CALLBACK(button_callback), (gpointer)c);
   gtk_widget_set_name(button, name);
+  if (css_class) {
+    GtkStyleContext *context = gtk_widget_get_style_context(button);
+    gtk_style_context_add_class(context, css_class);
+  }
   gtk_container_add(GTK_CONTAINER(box), button);
 }
 
@@ -338,16 +342,16 @@ int main(int argc, char *argv[]) {
   GtkWidget *hbox2 = gtk_box_new(GTK_ORIENTATION_HORIZONTAL, FALSE);
 
   // Buttons
-  add_button(box, "Start Drill", START_DRILL, "start_drill_button");
-  add_button(box, "Stop Drill", STOP_DRILL, "stop_drill_button");
+  add_button(box, "Start Drill", START_DRILL, "start_drill_button", NULL);
+  add_button(box, "Stop Drill", STOP_DRILL, "stop_drill_button", NULL);
   gtk_container_add(GTK_CONTAINER(box), hbox1);
-  add_button(hbox1, "Z- (Q)", ZM, "zm_button");
-  add_button(hbox1, "Y+ (W)", YP, "yp_button");
-  add_button(hbox1, "Z+ (E)", ZP, "zp_button");
+  add_button(hbox1, "Z- (Q)", ZM, "zm_button", "direction_button");
+  add_button(hbox1, "Y+ (W)", YP, "yp_button", "direction_button");
+  add_button(hbox1, "Z+ (E)", ZP, "zp_button", "direction_button");
   gtk_container_add(GTK_CONTAINER(box), hbox2);
-  add_button(hbox2, "X- (A)", XM, "xm_button");
-  add_button(hbox2, "Y- (S)", YM, "ym_button");
-  add_button(hbox2, "X+ (D)", XP, "xp_button");
+  add_button(hbox2, "X- (A)", XM, "xm_button", "direction_button");
+  add_button(hbox2, "Y- (S)", YM, "ym_button", "direction_button");
+  add_button(hbox2, "X+ (D)", XP, "xp_button", "direction_button");
 
   // Sliders
   GtkWidget *drill_speed_slider = gtk_scale_new_with_range(GTK_ORIENTATION_HORIZONTAL, 0, 10000, .01);
@@ -361,10 +365,10 @@ int main(int argc, char *argv[]) {
   gtk_container_add(GTK_CONTAINER(box), movement_speed_slider);
 
   // Run Program Button
-  add_button(box, "Run Program", PROGRAM, "program_button");
+  add_button(box, "Run Program", PROGRAM, "program_button", NULL);
 
   // Abort Button
-  add_button(box, "ABORT", ABORT, "abort_button");
+  add_button(box, "ABORT", ABORT, "abort_button", NULL);
 
   // CSS
   GtkCssProvider *css = gtk_css_provider_new();
