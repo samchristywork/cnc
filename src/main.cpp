@@ -330,6 +330,9 @@ int main(int argc, char *argv[]) {
 
   // Main window
   GtkWidget *window = gtk_window_new(GTK_WINDOW_TOPLEVEL);
+  GdkRectangle workarea = {0};
+  gdk_monitor_get_workarea(gdk_display_get_primary_monitor(gdk_display_get_default()), &workarea);
+  gtk_window_move(GTK_WINDOW(window), workarea.width - 360, 10);
   gtk_window_set_resizable(GTK_WINDOW(window), false);
   gtk_window_set_title(GTK_WINDOW(window), "CNC");
 
