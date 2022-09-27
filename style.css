@@ -1,13 +1,16 @@
 button#start_drill_button {
-  color: red;
   background: green;
 }
 
 button {
-  min-width: 100px;
+  min-height: 40px;
 }
 
 button#abort_button {
   color: white;
   background: red;
+}
+
+.direction_button {
+  min-width: 100px;
 }
