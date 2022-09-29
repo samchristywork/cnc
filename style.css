@@ -14,3 +14,8 @@ button#abort_button {
 .direction_button {
   min-width: 100px;
 }
+
+.foo {
+  background: white;
+  color: black;
+}

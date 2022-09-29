@@ -342,6 +342,50 @@ int main(int argc, char *argv[]) {
   GtkWidget *hbox1 = gtk_box_new(GTK_ORIENTATION_HORIZONTAL, FALSE);
   GtkWidget *hbox2 = gtk_box_new(GTK_ORIENTATION_HORIZONTAL, FALSE);
 
+  // DRO
+  GtkWidget *hbox3 = gtk_box_new(GTK_ORIENTATION_HORIZONTAL, FALSE);
+  GtkWidget *hbox4 = gtk_box_new(GTK_ORIENTATION_HORIZONTAL, FALSE);
+  GtkWidget *wposX = gtk_label_new("");
+  GtkWidget *wposY = gtk_label_new("");
+  GtkWidget *wposZ = gtk_label_new("");
+  GtkWidget *mposX = gtk_label_new("");
+  GtkWidget *mposY = gtk_label_new("");
+  GtkWidget *mposZ = gtk_label_new("");
+
+  {
+    GtkStyleContext *context;
+    context = gtk_widget_get_style_context(wposX);
+    gtk_style_context_add_class(context, "foo");
+    context = gtk_widget_get_style_context(wposY);
+    gtk_style_context_add_class(context, "foo");
+    context = gtk_widget_get_style_context(wposZ);
+    gtk_style_context_add_class(context, "foo");
+    context = gtk_widget_get_style_context(mposX);
+    gtk_style_context_add_class(context, "foo");
+    context = gtk_widget_get_style_context(mposY);
+    gtk_style_context_add_class(context, "foo");
+    context = gtk_widget_get_style_context(mposZ);
+    gtk_style_context_add_class(context, "foo");
+  }
+
+  float a=0;
+  char buf[256];
+  sprintf(buf, "%f", a);
+  gtk_label_set_label(GTK_LABEL(wposX), buf);
+  gtk_label_set_label(GTK_LABEL(wposY), buf);
+  gtk_label_set_label(GTK_LABEL(wposZ), buf);
+  gtk_label_set_label(GTK_LABEL(mposX), buf);
+  gtk_label_set_label(GTK_LABEL(mposY), buf);
+  gtk_label_set_label(GTK_LABEL(mposZ), buf);
+  gtk_container_add(GTK_CONTAINER(box), hbox3);
+  gtk_container_add(GTK_CONTAINER(hbox3), wposX);
+  gtk_container_add(GTK_CONTAINER(hbox3), wposY);
+  gtk_container_add(GTK_CONTAINER(hbox3), wposZ);
+  gtk_container_add(GTK_CONTAINER(box), hbox4);
+  gtk_container_add(GTK_CONTAINER(hbox4), mposX);
+  gtk_container_add(GTK_CONTAINER(hbox4), mposY);
+  gtk_container_add(GTK_CONTAINER(hbox4), mposZ);
+
   // Buttons
   add_button(box, "Start Drill", START_DRILL, "start_drill_button", NULL);
   add_button(box, "Stop Drill", STOP_DRILL, "stop_drill_button", NULL);
