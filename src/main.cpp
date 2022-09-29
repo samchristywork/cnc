@@ -90,6 +90,7 @@ void ports_init() {
       sp_set_baudrate(port_list[i], 115200);
       main_port = port_list[i];
       usleep(2 * 1000 * 1000);
+      return;
     }
   }
 }
