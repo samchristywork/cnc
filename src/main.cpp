@@ -339,17 +339,17 @@ int main(int argc, char *argv[]) {
   {
     GtkStyleContext *context;
     context = gtk_widget_get_style_context(wposX);
-    gtk_style_context_add_class(context, "foo");
+    gtk_style_context_add_class(context, "DRO");
     context = gtk_widget_get_style_context(wposY);
-    gtk_style_context_add_class(context, "foo");
+    gtk_style_context_add_class(context, "DRO");
     context = gtk_widget_get_style_context(wposZ);
-    gtk_style_context_add_class(context, "foo");
+    gtk_style_context_add_class(context, "DRO");
     context = gtk_widget_get_style_context(mposX);
-    gtk_style_context_add_class(context, "foo");
+    gtk_style_context_add_class(context, "DRO");
     context = gtk_widget_get_style_context(mposY);
-    gtk_style_context_add_class(context, "foo");
+    gtk_style_context_add_class(context, "DRO");
     context = gtk_widget_get_style_context(mposZ);
-    gtk_style_context_add_class(context, "foo");
+    gtk_style_context_add_class(context, "DRO");
   }
 
   float a=0;
