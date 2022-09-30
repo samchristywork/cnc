@@ -18,4 +18,5 @@ button#abort_button {
 .DRO {
   background: white;
   color: black;
+  min-width: 114px;
 }
