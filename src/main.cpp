@@ -104,28 +104,6 @@ void draw_line(float xoff, float yoff, float x0, float y0, float x1, float y1, f
 }
 
 void run_program() {
-  SEND_COMMAND_BLOCKING("G21\r\n");                 // Millimeters
-  SEND_COMMAND_BLOCKING("G90\r\n");                 // Absolute coordinates
-  SEND_COMMAND_BLOCKING("G10 L20 P1 X0 Y0 Z0\r\n"); // Magic
-  usleep(1000 * 100);
-
-  SEND_COMMAND_BLOCKING("G17\r\n"); // Select XY plane
-  usleep(1000 * 1000);
-  for (float f = 1; f < 20; f+=2) {
-    float radius = f;
-    SEND_COMMAND_BLOCKING("G1 F200 X-%f Y0\r\n", radius);
-    usleep(1000 * 1000);
-    SEND_COMMAND_BLOCKING("G02 F200 X0 Y%f I%f J0\r\n", radius, radius);
-    usleep(1000 * 1000);
-    SEND_COMMAND_BLOCKING("G02 F200 X%f Y0 I0. J-%f\r\n", radius, radius);
-    usleep(1000 * 1000);
-    SEND_COMMAND_BLOCKING("G02 F200 X0 Y-%f I-%f J0\r\n", radius, radius);
-    usleep(1000 * 1000);
-    SEND_COMMAND_BLOCKING("G02 F200 X-%f Y0 I0 J%f\r\n", radius, radius);
-    usleep(1000 * 1000);
-    SEND_COMMAND_BLOCKING("G1 F200 X0 Y0\r\n");
-    usleep(1000 * 1000);
-  }
 }
 
 /*
