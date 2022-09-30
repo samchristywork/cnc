@@ -327,8 +327,8 @@ int main(int argc, char *argv[]) {
   GtkWidget *hbox2 = gtk_box_new(GTK_ORIENTATION_HORIZONTAL, FALSE);
 
   // DRO
-  GtkWidget *hbox3 = gtk_box_new(GTK_ORIENTATION_HORIZONTAL, FALSE);
-  GtkWidget *hbox4 = gtk_box_new(GTK_ORIENTATION_HORIZONTAL, FALSE);
+  GtkWidget *work_pos_hbox = gtk_box_new(GTK_ORIENTATION_HORIZONTAL, FALSE);
+  GtkWidget *machine_pos_hbox = gtk_box_new(GTK_ORIENTATION_HORIZONTAL, FALSE);
   GtkWidget *wposX = gtk_label_new("");
   GtkWidget *wposY = gtk_label_new("");
   GtkWidget *wposZ = gtk_label_new("");
@@ -361,14 +361,14 @@ int main(int argc, char *argv[]) {
   gtk_label_set_label(GTK_LABEL(mposX), buf);
   gtk_label_set_label(GTK_LABEL(mposY), buf);
   gtk_label_set_label(GTK_LABEL(mposZ), buf);
-  gtk_container_add(GTK_CONTAINER(box), hbox3);
-  gtk_container_add(GTK_CONTAINER(hbox3), wposX);
-  gtk_container_add(GTK_CONTAINER(hbox3), wposY);
-  gtk_container_add(GTK_CONTAINER(hbox3), wposZ);
-  gtk_container_add(GTK_CONTAINER(box), hbox4);
-  gtk_container_add(GTK_CONTAINER(hbox4), mposX);
-  gtk_container_add(GTK_CONTAINER(hbox4), mposY);
-  gtk_container_add(GTK_CONTAINER(hbox4), mposZ);
+  gtk_container_add(GTK_CONTAINER(work_pos_hbox), wposX);
+  gtk_container_add(GTK_CONTAINER(work_pos_hbox), wposY);
+  gtk_container_add(GTK_CONTAINER(work_pos_hbox), wposZ);
+  gtk_container_add(GTK_CONTAINER(machine_pos_hbox), mposX);
+  gtk_container_add(GTK_CONTAINER(machine_pos_hbox), mposY);
+  gtk_container_add(GTK_CONTAINER(machine_pos_hbox), mposZ);
+  gtk_container_add(GTK_CONTAINER(box), work_pos_hbox);
+  gtk_container_add(GTK_CONTAINER(box), machine_pos_hbox);
 
   // Buttons
   add_button(box, "Start Drill", START_DRILL, "start_drill_button", NULL);
