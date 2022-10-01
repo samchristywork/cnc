@@ -6,7 +6,7 @@ all: build/cnc
 
 build/cnc: src/main.cpp
 	mkdir -p build/
-	${CC} ${CPPFLAGS} src/main.cpp -o build/cnc ${LIBS}
+	${CC} ${CPPFLAGS} $^ -o $@ ${LIBS}
 
 clean:
 	rm -rf build/
