@@ -280,7 +280,13 @@ void *render_3d(void *v) {
       } else
         collision.hit = false;
     }
-    cubeScreenPosition = GetWorldToScreen((Vector3){cubePosition.x, cubePosition.y + 2.5f, cubePosition.z}, camera);
+
+    Vector3 position;
+    position.x = cubePosition.x;
+    position.y = cubePosition.y + 2.5f;
+    position.z = cubePosition.z;
+
+    cubeScreenPosition = GetWorldToScreen(position, camera);
     BeginDrawing();
     ClearBackground(RAYWHITE);
     DrawFPS(10, 10);
