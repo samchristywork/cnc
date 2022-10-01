@@ -212,9 +212,18 @@ void *render_3d(void *v) {
   InitWindow(0, 0, "CNC");
 
   Camera camera = {0};
-  camera.position = (Vector3){10.0f, 10.0f, 10.0f};
-  camera.target = (Vector3){0.0f, 0.0f, 0.0f};
-  camera.up = (Vector3){0.0f, 1.0f, 0.0f};
+  camera.position.x = 10.0f;
+  camera.position.y = 10.0f;
+  camera.position.z = 10.0f;
+
+  camera.target.x = 0.0f;
+  camera.target.y = 0.0f;
+  camera.target.z = 0.0f;
+
+  camera.up.x = 0.0f;
+  camera.up.y = 1.0f;
+  camera.up.z = 0.0f;
+
   camera.fovy = 45.0f;
   camera.projection = CAMERA_PERSPECTIVE;
   Model model1 = LoadModel("models/collet.obj");
@@ -257,9 +266,17 @@ void *render_3d(void *v) {
       if (!collision.hit) {
         ray = GetMouseRay(GetMousePosition(), camera);
 
-        collision = GetRayCollisionBox(ray,
-                                       (BoundingBox){(Vector3){cubePosition.x - cubeSize.x / 2, cubePosition.y - cubeSize.y / 2, cubePosition.z - cubeSize.z / 2},
-                                                     (Vector3){cubePosition.x + cubeSize.x / 2, cubePosition.y + cubeSize.y / 2, cubePosition.z + cubeSize.z / 2}});
+        Vector3 min;
+        Vector3 max;
+        min.x = cubePosition.x - cubeSize.x / 2;
+        min.y = cubePosition.y - cubeSize.y / 2;
+        min.z = cubePosition.z - cubeSize.z / 2;
+        max.x = cubePosition.x + cubeSize.x / 2;
+        max.y = cubePosition.y + cubeSize.y / 2;
+        max.z = cubePosition.z + cubeSize.z / 2;
+
+        BoundingBox box = { min, max };
+        collision = GetRayCollisionBox(ray, box);
       } else
         collision.hit = false;
     }
