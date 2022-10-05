@@ -327,6 +327,31 @@ void usage(char *argv[]) {
 
 int main(int argc, char *argv[]) {
 
+  int verbose = 0;
+
+  int opt;
+  int option_index = 0;
+  char *optstring = "p:hv";
+  static struct option long_options[] = {
+      {"port", required_argument, 0, 'p'},
+      {"help", no_argument, 0, 'h'},
+      {"verbose", no_argument, 0, 'v'},
+      {0, 0, 0, 0},
+  };
+  while ((opt = getopt_long(argc, argv, optstring, long_options, &option_index)) != -1) {
+    if (opt == 'p') {
+      strcpy(default_port, optarg);
+    } else if (opt == 'h') {
+      usage(argv);
+    } else if (opt == 'v') {
+      verbose = 1;
+    } else if (opt == '?') {
+      usage(argv);
+    } else {
+      puts(optarg);
+    }
+  }
+
   pthread_t thread;
   pthread_create(&thread, NULL, render_3d, NULL);
 
