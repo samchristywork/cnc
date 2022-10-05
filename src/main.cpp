@@ -3,6 +3,8 @@
 #include <libserialport.h>
 #include <math.h>
 
+char default_port[256] = "/dev/ttyUSB0";
+
 #define SEND_COMMAND_NONBLOCKING(...)                                  \
   {                                                                    \
     char command[256];                                                 \
@@ -85,7 +87,7 @@ void ports_init() {
 
     printf("Found port: %s\n", port_name);
 
-    if (strcmp(port_name, "/dev/ttyUSB0") == 0) {
+    if (strcmp(port_name, default_port) == 0) {
       sp_open(port_list[i], SP_MODE_READ_WRITE);
       sp_set_baudrate(port_list[i], 115200);
       main_port = port_list[i];
