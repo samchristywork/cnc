@@ -279,7 +279,7 @@ void *render_3d(void *v) {
         max.y = cubePosition.y + cubeSize.y / 2;
         max.z = cubePosition.z + cubeSize.z / 2;
 
-        BoundingBox box = { min, max };
+        BoundingBox box = {min, max};
         collision = GetRayCollisionBox(ray, box);
       } else
         collision.hit = false;
@@ -415,7 +415,7 @@ int main(int argc, char *argv[]) {
     gtk_style_context_add_class(context, "DRO");
   }
 
-  float a=0;
+  float a = 0;
   char buf[256];
   sprintf(buf, "%f", a);
   gtk_label_set_label(GTK_LABEL(wposX), buf);
