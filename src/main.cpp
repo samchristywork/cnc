@@ -1,7 +1,9 @@
-#include "raylib.h"
+#include <getopt.h>
 #include <gtk/gtk.h>
 #include <libserialport.h>
 #include <math.h>
+
+#include "raylib.h"
 
 char default_port[256] = "/dev/ttyUSB0";
 
