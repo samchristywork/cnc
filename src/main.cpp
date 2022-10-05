@@ -314,6 +314,17 @@ void *render_3d(void *v) {
   return NULL;
 }
 
+void usage(char *argv[]) {
+  fprintf(stderr,
+          "Usage: %s [file]\n"
+          " -p,--port      .\n"
+          " -h,--help      Print this usage message.\n"
+          " -v,--verbose   Display additional logging information.\n"
+          "",
+          argv[0]);
+  exit(EXIT_FAILURE);
+}
+
 int main(int argc, char *argv[]) {
 
   pthread_t thread;
