@@ -6,6 +6,7 @@
 #include "raylib.h"
 
 char default_port[256] = "/dev/ttyUSB0";
+char window_title[256] = "CNC";
 
 #define SEND_COMMAND_NONBLOCKING(...)                                  \
   {                                                                    \
@@ -213,7 +214,7 @@ void *render_3d(void *v) {
   SetConfigFlags(FLAG_MSAA_4X_HINT);
   SetConfigFlags(FLAG_WINDOW_RESIZABLE);
   SetTraceLogLevel(LOG_NONE);
-  InitWindow(0, 0, "CNC");
+  InitWindow(0, 0, window_title);
 
   Camera camera = {0};
   camera.position.x = 10.0f;
@@ -333,9 +334,10 @@ int main(int argc, char *argv[]) {
 
   int opt;
   int option_index = 0;
-  char *optstring = "p:hv";
+  char *optstring = "p:t:hv";
   static struct option long_options[] = {
       {"port", required_argument, 0, 'p'},
+      {"title", required_argument, 0, 't'},
       {"help", no_argument, 0, 'h'},
       {"verbose", no_argument, 0, 'v'},
       {0, 0, 0, 0},
@@ -343,6 +345,8 @@ int main(int argc, char *argv[]) {
   while ((opt = getopt_long(argc, argv, optstring, long_options, &option_index)) != -1) {
     if (opt == 'p') {
       strcpy(default_port, optarg);
+    } else if (opt == 't') {
+      strcpy(window_title, optarg);
     } else if (opt == 'h') {
       usage(argv);
     } else if (opt == 'v') {
@@ -381,7 +385,7 @@ int main(int argc, char *argv[]) {
   gdk_monitor_get_workarea(gdk_display_get_primary_monitor(gdk_display_get_default()), &workarea);
   gtk_window_move(GTK_WINDOW(window), workarea.width - 360, 10);
   gtk_window_set_resizable(GTK_WINDOW(window), false);
-  gtk_window_set_title(GTK_WINDOW(window), "CNC");
+  gtk_window_set_title(GTK_WINDOW(window), window_title);
 
   // Boxes
   GtkWidget *box = gtk_box_new(GTK_ORIENTATION_VERTICAL, FALSE);
