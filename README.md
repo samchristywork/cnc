@@ -2,12 +2,14 @@
 
 ## Overview
 
+<p align="center">
+  <img alt="CNC Program Screenshot" src="./res/screenshot.png">
+<p>
+
 This is a program for sending control data to GRBL-compatible CNC machines via
 serial connection. It has two modes of operation: you can either send control
 signals like setting the speed of the spindle or commanding movement on an axis,
 or you can send a file full of g-code to execute as a batch.
-
-## Screenshots
 
 ## Usage
 
